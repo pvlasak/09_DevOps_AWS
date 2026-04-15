@@ -11,7 +11,7 @@ pipeline {
         maven 'Maven3.9'
     }
     environment {
-        IMAGE_NAME: 'petrdeveloper/demo-app:java-maven-app-1.1.0'
+        IMAGE_NAME='petrdeveloper/demo-app:java-maven-app-1.1.0'
     }
     stages {
         stage("build app") {
