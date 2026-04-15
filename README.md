@@ -27,7 +27,7 @@ Admin user has assigned admin user role that allows him to do all actions on all
                     *sshagent(['aws-ec2-credentials']) {* <br>
                         *sh "ssh -o StrictHostKeyChecking=no ec2-user@IP_ADDRESS ${dockerCmd}"* <br>
                     *}* <br>
-
+- name of the docker image can be defined as environmental variable in the `environment` section inside the Jenkinsfile. 
 
 
 
