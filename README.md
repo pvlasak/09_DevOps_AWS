@@ -29,6 +29,10 @@ Admin user has assigned admin user role that allows him to do all actions on all
                     *}* <br>
 - name of the docker image can be defined as environmental variable in the `environment` section inside the Jenkinsfile. 
 
-
-
+### Start an application on EC2 with docker-compose file
+- docker-compose has to be installed on EC2 instance <br>
+*sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose*<br>
+*sudo chmod +x /usr/local/bin/docker-compose* <br>
+- configure docker-compose.yaml file
+- in Jenkinsfile: within sshAgent add *scp* command to copy the docker-compose.yaml into home directory on EC2, afterwards *ssh* command together with docker compose command should follow. 
 
