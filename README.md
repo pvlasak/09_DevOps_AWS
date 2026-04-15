@@ -1,2 +1,34 @@
 # 09_DevOps_AWS
 repository to practice manual application deployment on EC2 instance, setup of automated CI pipeline including deployment of docker image from Jenkins server.
+
+On AWS is recommended to create an admin user and assign him UI and CLI access to AWS account <br>
+Admin user has assigned admin user role that allows him to do all actions on all recoureses in the account <br>
+
+## EC2 instance
+- Can be created in the section *Compute - EC2*
+- Access key pair can be generated during setting up the EC2 instace. The access key is saved on AWS and private key is automatically downloaded to localhost. 
+- For Mac and Linux is recommended to use *.pem* format of the access key. Private key is recommended to be copied to the ~/.ssh and set read only permission for user. This access key provides secured access to EC2 instance. 
+- Instance is running in the VPC of the selected region. Each availability zone in the VPC has its own subnet.
+
+### Start docker image available in private DockerHub repository
+
+- Install docker on EC2 instance:
+    - *sudo yum update*
+    - *sudo yum install docker*
+    - add user ec2-user to docker group to allow executation of docker commands without root privileges: *sudo usermod -aG docker $USER*, it can be checked in `/ect/group` 
+    - start docker: *sudo service docker start*
+    - login to DockerHub repository: *docker login*
+    - run docker image from private repository: *docker run -p 3000:3080 -d <docker-image>* 
+
+### Deploy Application on EC2 from DockerHub private repository from Jenkins server
+- in Jenkins multibranch pipeline the credentials to access EC2 instance has to be created as SSH username with privated key. As private key a content of the file inside ~/.ssh folder can be used. 
+- sshAgent plugin in Jenkins must be installed. <br> 
+*def dockerCmd = 'docker run -p 3080:3080 -d petrdeveloper/demo-app:1.1'* <br>
+                    *sshagent(['aws-ec2-credentials']) {* <br>
+                        *sh "ssh -o StrictHostKeyChecking=no ec2-user@IP_ADDRESS ${dockerCmd}"* <br>
+                    *}* <br>
+
+
+
+
+
