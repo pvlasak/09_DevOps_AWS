@@ -10,15 +10,26 @@ pipeline {
     tools {
         maven 'Maven3.9'
     }
-    environment {
-        IMAGE_NAME='petrdeveloper/demo-app:java-maven-app-2.1.0'
-    }
     stages {
+       stage('increment version') {
+                steps {
+                    script {
+                        sh 'mvn build-helper:parse-version versions:set \
+                            -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                            versions:commit'
+                        def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                        def version = matcher[0][1]
+                        echo matcher[0][0]
+                        env.TAG = "${version}-${BUILD_NUMBER}"
+                        env.IMAGE_NAME = "petrdeveloper/demo-app:java-maven:${TAG}"
+                    }
+                }
+            }
         stage("build app") {
             steps {
                 script {
                     echo "Testing the application..."
-                    buildJar()
+                    sh "mvn clean package"
                 }
             }
         }
