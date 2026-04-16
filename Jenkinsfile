@@ -21,7 +21,7 @@ pipeline {
                         def version = matcher[0][1]
                         echo matcher[0][0]
                         env.TAG = "${version}-${BUILD_NUMBER}"
-                        env.IMAGE_NAME = "petrdeveloper/demo-app:java-maven:${TAG}"
+                        env.IMAGE_NAME = "petrdeveloper/demo-app:java-maven-${TAG}"
                     }
                 }
             }
