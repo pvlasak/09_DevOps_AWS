@@ -37,10 +37,11 @@ pipeline {
                 script {
                     echo "Deploying the application..."
                     def shellCmds = "bash ./shell_cmds.sh ${IMAGE_NAME}"
+                    def ec2Instance = "ec2-user@3.73.40.234"
                     sshagent(['aws-ec2-credentials']) {
-                        sh "scp shell_cmds.sh ec2-user@3.73.40.234:/home/ec2-user"
-                        sh "scp docker-compose.yaml ec2-user@3.73.40.234:/home/ec2-user"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.73.40.234 ${shellCmds}"
+                        sh "scp shell_cmds.sh ${ec2Instance}:/home/ec2-user"
+                        sh "scp docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmds}"
                     }
                 }
             }
