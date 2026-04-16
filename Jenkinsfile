@@ -57,5 +57,22 @@ pipeline {
                 }
             }
         }
+        stage('commit version update') {
+            steps {
+                 script {
+                      withCredentials([usernamePassword(credentialsId: 'github-username-token', passwordVariable: 'TOKEN', usernameVariable:'USER')]) {
+                          sh 'git config user.email "jenkins@example.com"'
+                          sh 'git config user.name "jenkins"'
+                          sh 'git status'
+                          sh 'git branch'
+                          sh 'git config --list'
+                          sh "git remote set-url origin https://${USER}:${TOKEN}@github.com/pvlasak/09_DevOps_AWS.git"
+                          sh 'git add .'
+                          sh 'git commit -m "ci: version bump"'
+                          sh 'git push origin HEAD:increment_version'
+                      }
+                 }
+            }
+        }
     }
 }
