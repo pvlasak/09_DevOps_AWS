@@ -69,7 +69,7 @@ pipeline {
                           sh "git remote set-url origin https://${USER}:${TOKEN}@github.com/pvlasak/09_DevOps_AWS.git"
                           sh 'git add .'
                           sh 'git commit -m "ci: version bump"'
-                          sh 'git push origin HEAD:increment_version'
+                          sh 'git push origin HEAD:jenkins-jobs'
                       }
                  }
             }
