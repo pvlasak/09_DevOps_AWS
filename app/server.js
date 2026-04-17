@@ -68,6 +68,7 @@ app.post('/update-profile', function (req, res) {
 
     db.collection(collectionName).updateOne(myquery, newvalues, {upsert: true}, function(err, res) {
       if (err) throw err;
+      console.log('error, closing a client!')
       client.close();
     });
 
