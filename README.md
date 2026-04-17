@@ -1,38 +1,72 @@
-# 09_DevOps_AWS
-repository to practice manual application deployment on EC2 instance, setup of automated CI pipeline including deployment of docker image from Jenkins server.
+## demo app - developing with Docker
 
-On AWS is recommended to create an admin user and assign him UI and CLI access to AWS account <br>
-Admin user has assigned admin user role that allows him to do all actions on all recoureses in the account <br>
+This demo app shows a simple user profile app set up using 
+- index.html with pure js and css styles
+- nodejs backend with express module
+- mongodb for data storage
 
-## EC2 instance
-- Can be created in the section *Compute - EC2*
-- Access key pair can be generated during setting up the EC2 instace. The access key is saved on AWS and private key is automatically downloaded to localhost. 
-- For Mac and Linux is recommended to use *.pem* format of the access key. Private key is recommended to be copied to the ~/.ssh and set read only permission for user. This access key provides secured access to EC2 instance. 
-- Instance is running in the VPC of the selected region. Each availability zone in the VPC has its own subnet.
+All components are docker-based
 
-### Start docker image available in private DockerHub repository
+### With Docker
 
-- Install docker on EC2 instance:
-    - *sudo yum update*
-    - *sudo yum install docker*
-    - add user ec2-user to docker group to allow executation of docker commands without root privileges: *sudo usermod -aG docker $USER*, it can be checked in `/ect/group` 
-    - start docker: *sudo service docker start*
-    - login to DockerHub repository: *docker login*
-    - run docker image from private repository: *docker run -p 3000:3080 -d <docker-image>* 
+#### To start the application
 
-### Deploy Application on EC2 from DockerHub private repository from Jenkins server
-- in Jenkins multibranch pipeline the credentials to access EC2 instance has to be created as SSH username with privated key. As private key a content of the file inside ~/.ssh folder can be used. 
-- sshAgent plugin in Jenkins must be installed. <br> 
-*def dockerCmd = 'docker run -p 3080:3080 -d petrdeveloper/demo-app:1.1'* <br>
-                    *sshagent(['aws-ec2-credentials']) {* <br>
-                        *sh "ssh -o StrictHostKeyChecking=no ec2-user@IP_ADDRESS ${dockerCmd}"* <br>
-                    *}* <br>
-- name of the docker image can be defined as environmental variable in the `environment` section inside the Jenkinsfile. 
+Step 1: Create docker network
 
-### Start an application on EC2 with docker-compose file
-- docker-compose has to be installed on EC2 instance <br>
-*sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose*<br>
-*sudo chmod +x /usr/local/bin/docker-compose* <br>
-- configure docker-compose.yaml file
-- in Jenkinsfile: within sshAgent add *scp* command to copy the docker-compose.yaml into home directory on EC2, afterwards *ssh* command together with docker compose command should follow. 
+    docker network create mongo-network 
 
+Step 2: start mongodb 
+
+    docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --name mongodb --net mongo-network mongo    
+
+Step 3: start mongo-express
+    
+    docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb -e ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017 mongo-express   
+
+_NOTE: creating docker-network in optional. You can start both containers in a default network. In this case, just emit `--net` flag in `docker run` command_
+
+Step 4: open mongo-express from browser
+
+    http://localhost:8081
+
+Step 5: create `user-account` _db_ and `users` _collection_ in mongo-express
+
+Step 6: Start your nodejs application locally - go to `app` directory of project 
+
+    cd app
+    npm install 
+    node server.js
+    
+Step 7: Access you nodejs application UI from browser
+
+    http://localhost:3000
+
+### With Docker Compose
+
+#### To start the application
+
+Step 1: start mongodb and mongo-express
+
+    docker-compose -f docker-compose.yaml up
+    
+_You can access the mongo-express under localhost:8080 from your browser_
+    
+Step 2: in mongo-express UI - create a new database "user-account"
+
+Step 3: in mongo-express UI - create a new collection "users" in the database "user-account"       
+    
+Step 4: start node server 
+
+    cd app
+    npm install
+    node server.js
+    
+Step 5: access the nodejs application from browser 
+
+    http://localhost:3000
+
+#### To build a docker image from the application
+
+    docker build -t my-app:1.0 .       
+    
+The dot "." at the end of the command denotes location of the Dockerfile.
