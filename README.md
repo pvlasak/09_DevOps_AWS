@@ -27,7 +27,7 @@ Admin user has assigned admin user role that allows him to do all actions on all
                     *sshagent(['aws-ec2-credentials']) {* <br>
                         *sh "ssh -o StrictHostKeyChecking=no ec2-user@IP_ADDRESS ${dockerCmd}"* <br>
                     *}* <br>
-- name of the docker image can be defined as environmental variable in the `environment` section inside the Jenkinsfile. 
+- name of the docker image can be defined as environmental variable in the `environment` section inside the Jenkinsfile or defined as variable getting value from `pom.xml` and automatically incremented by maven built-in plugin. 
 
 ### Start an application on EC2 with docker-compose file
 - docker-compose has to be installed on EC2 instance <br>
@@ -36,3 +36,16 @@ Admin user has assigned admin user role that allows him to do all actions on all
 - configure docker-compose.yaml file
 - in Jenkinsfile: within sshAgent add *scp* command to copy the docker-compose.yaml into home directory on EC2, afterwards *ssh* command together with docker compose command should follow. 
 
+### Extract docker-compose commands to a bash script and make image name dynamic
+-  image name should not be hardcoded in Jenkinsfile or docker-compose.yaml file. Therefore, it is better to define it as and environmental variable in the Jenkinsfile 
+- the variable value from Jenkinsfile can be forwarded to a bash script as parameter. Inside the bash script a linux environmental variable can be exported to be available on EC2 instance for *docker-compose*.
+Commands inside the bash script intiate the execution of *docker-compose* :<br>
+*#!/usr/bin/env bash* <br>
+*export IMAGE=$1* <br>
+*docker-compose -f docker-compose.yaml up --detach* <br>
+
+*def shellCmds = "bash ./shell_cmds.sh ${IMAGE_NAME}"* <br>
+*sshagent(['aws-ec2-credentials']) {* <br>
+    *sh "scp shell_cmds.sh ec2-user@IP-address:/home/ec2-user"* <br>
+    *sh "scp docker-compose.yaml ec2-user@IP-address:/home/ec2-user"* <br>
+    *sh "ssh -o StrictHostKeyChecking=no ec2-user@IP-address ${shellCmds}"}* <br>
