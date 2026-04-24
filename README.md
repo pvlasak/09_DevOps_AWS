@@ -40,12 +40,12 @@ Admin user has assigned admin user role that allows him to do all actions on all
 -  image name should not be hardcoded in Jenkinsfile or docker-compose.yaml file. Therefore, it is better to define it as and environmental variable in the Jenkinsfile 
 - the variable value from Jenkinsfile can be forwarded to a bash script as parameter. Inside the bash script a linux environmental variable can be exported to be available on EC2 instance for *docker-compose*.
 Commands inside the bash script intiate the execution of *docker-compose* :<br>
-*#!/usr/bin/env bash*
-*export IMAGE=$1*
-*docker-compose -f docker-compose.yaml up --detach*
+*#!/usr/bin/env bash* <br>
+*export IMAGE=$1* <br>
+*docker-compose -f docker-compose.yaml up --detach* <br>
 
-*def shellCmds = "bash ./shell_cmds.sh ${IMAGE_NAME}"*
-*sshagent(['aws-ec2-credentials']) {*
-    *sh "scp shell_cmds.sh ec2-user@IP-address:/home/ec2-user"*
-    *sh "scp docker-compose.yaml ec2-user@IP-address:/home/ec2-user"*
-    *sh "ssh -o StrictHostKeyChecking=no ec2-user@IP-address ${shellCmds}"}*
+*def shellCmds = "bash ./shell_cmds.sh ${IMAGE_NAME}"* <br>
+*sshagent(['aws-ec2-credentials']) {* <br>
+    *sh "scp shell_cmds.sh ec2-user@IP-address:/home/ec2-user"* <br>
+    *sh "scp docker-compose.yaml ec2-user@IP-address:/home/ec2-user"* <br>
+    *sh "ssh -o StrictHostKeyChecking=no ec2-user@IP-address ${shellCmds}"}* <br>
