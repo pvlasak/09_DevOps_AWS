@@ -11,7 +11,7 @@ Admin user has assigned admin user role that allows him to do all actions on all
 - Instance is running in the VPC of the selected region. Each availability zone in the VPC has its own subnet.
 
 ### Start docker image available in private DockerHub repository
-
+- branch **feature/payment**
 - Install docker on EC2 instance:
     - *sudo yum update*
     - *sudo yum install docker*
@@ -21,6 +21,7 @@ Admin user has assigned admin user role that allows him to do all actions on all
     - run docker image from private repository: *docker run -p 3000:3080 -d <docker-image>* 
 
 ### Deploy Application on EC2 from DockerHub private repository from Jenkins server
+- branch **jenkins-jobs**
 - in Jenkins multibranch pipeline the credentials to access EC2 instance has to be created as SSH username with privated key. As private key a content of the file inside ~/.ssh folder can be used. 
 - sshAgent plugin in Jenkins must be installed. <br> 
 *def dockerCmd = 'docker run -p 3080:3080 -d petrdeveloper/demo-app:1.1'* <br>
@@ -30,6 +31,7 @@ Admin user has assigned admin user role that allows him to do all actions on all
 - name of the docker image can be defined as environmental variable in the `environment` section inside the Jenkinsfile or defined as variable getting value from `pom.xml` and automatically incremented by maven built-in plugin. 
 
 ### Start an application on EC2 with docker-compose file
+- branch **jenkins-jobs**
 - docker-compose has to be installed on EC2 instance <br>
 *sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose*<br>
 *sudo chmod +x /usr/local/bin/docker-compose* <br>
@@ -37,6 +39,7 @@ Admin user has assigned admin user role that allows him to do all actions on all
 - in Jenkinsfile: within sshAgent add *scp* command to copy the docker-compose.yaml into home directory on EC2, afterwards *ssh* command together with docker compose command should follow. 
 
 ### Extract docker-compose commands to a bash script and make image name dynamic
+- branch **jenkins-jobs**
 -  image name should not be hardcoded in Jenkinsfile or docker-compose.yaml file. Therefore, it is better to define it as and environmental variable in the Jenkinsfile 
 - the variable value from Jenkinsfile can be forwarded to a bash script as parameter. Inside the bash script a linux environmental variable can be exported to be available on EC2 instance for *docker-compose*.
 Commands inside the bash script intiate the execution of *docker-compose* :<br>
